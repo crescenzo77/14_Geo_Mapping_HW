@@ -1,7 +1,7 @@
-// store API endpoint inside variable queryUrl
-let queryUrl = "https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/all_day.geojson"
+// store the API endpoint inside variable queryUrl
+const queryUrl = "https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/all_day.geojson"
 
-// do GET request to queryURL
+// do a GET request to queryURL
 d3.json(queryUrl, function(data) {
   // send data.features object from GeoJSON to createFeatures function
   createFeatures(data.features);
@@ -9,16 +9,16 @@ d3.json(queryUrl, function(data) {
 
 function createFeatures(earthquakeData) {
 
-  // define onEachFeature function 
-  // give each feature a Popup describing the place, time & magnitude of each earthquake
+  // define the onEachFeature function 
+  // give each feature a Popup of details describing the place, time & magnitude of each earthquake
   function onEachFeature(feature, layer) {
     layer.bindPopup("<h3>Location: " + feature.properties.place +
       "</h3><hr><p>Time: " + new Date(feature.properties.time) + "</p>" +
       "</h3><hr><p>Magnitude: " + feature.properties.mag + "</p>");
   }
 
-  // create a GeoJSON layer containing the features array on the earthquakeData object
-  // run function onEachFeature for each item in the array
+  // create a GeoJSON layer to hold the features array on the earthquakeData object
+  // run the function onEachFeature for each item in the array
   let earthquakes = L.geoJSON(earthquakeData, {
     onEachFeature: onEachFeature,
     pointToLayer: function (feature, latlng) {
@@ -48,7 +48,7 @@ function getColor(color) {
 
 function createMap(earthquakes) {
 
-  // define layers for streetmap and darkmap
+  // define the layers for streetmap and darkmap
   let streetmap = L.tileLayer("https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token={accessToken}", {
     attribution: "Map data &copy; <a href=\"https://www.openstreetmap.org/\">OpenStreetMap</a> contributors, <a href=\"https://creativecommons.org/licenses/by-sa/2.0/\">CC-BY-SA</a>, Imagery © <a href=\"https://www.mapbox.com/\">Mapbox</a>",
     maxZoom: 17,
@@ -70,23 +70,23 @@ function createMap(earthquakes) {
     accessToken: API_KEY
   });
 
-  // define a object for baseMaps to hold base layers
+  // define an object for baseMaps to hold the base layers
   let baseMaps = {
     "Light Map": lightmap,
     "Dark Map": darkmap,
     "Street Map": streetmap
   };
 
-  // create overlay object to hold overlay layer
+  // create an overlay object to hold overlay layer
   let overlayMaps = {
     Earthquakes: earthquakes
   };
 
-  // create the map and give it the streetmap and earthquakes layers on pageload
+  // create the map and use the darkmap and earthquakes layers on pageload... because i like how it looks...
   let myMap = L.map("map", {
     center: [
       33.605210, -7.620411
-      // look up the geo coords on google maps, I think It's Rick Blaine's favorite spot...
+      // look up the geo coords on google maps, I think It's Rick Blaine's favorite spot... (Mr. "Play it again Sam")
     ],
     zoom: 3,
     layers: [darkmap, earthquakes]
@@ -97,7 +97,7 @@ function createMap(earthquakes) {
     collapsed: false
   }).addTo(myMap);
 
-  // add legend
+  // add the legend
   let legend = L.control({ position: "bottomright" });
 
   legend.onAdd = function(map) {
@@ -109,7 +109,7 @@ function createMap(earthquakes) {
       for (let i = 0; i < levels.length; i++) {
           div.innerHTML +=
           labels.push(
-            '<i style="background:' + getColor(levels[i] + 1) + '">.   .</i> ' + 
+            '<i style="background:' + getColor(levels[i] + 1) + '">.   .</i> ' + // <-- I very much dislike that part
             levels[i] + (levels[i + 1] ? ' to ' + levels[i + 1] + '<br>' : '+'));
     }
     div.innerHTML = '<h3>Magnitudes</h3><br>' + labels.join('<br>');
@@ -118,6 +118,6 @@ function createMap(earthquakes) {
 
   };
 
-  // add legend to the map
+  // add the legend to the map
   legend.addTo(myMap);
 }
